@@ -1,0 +1,36 @@
+#version: "3"
+#services:
+#  mysqldb:
+#    container_name: new-mysqldb
+#    image: mysql
+#    ports:
+#      - "3307:3306"
+#    environment:
+#      MYSQL_DATABASE: EasyDiner
+#      MYSQL_ROOT_PASSWORD: Test1234
+#      MYSQL_PASSWORD: Test1234
+#    networks:
+#      common_network:
+#        aliases:
+#          - db
+#
+#
+#  springboot-app:
+#    container_name: spring-app
+#    image: springboot-app
+#    build: .
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      MYSQL_HOST: mysqldb
+#      MYSQL_USER: root
+#      MYSQL_PASSWORD: 1234
+#      MYSQL_PORT: 3306    # we are in same network so we connect internally.
+#    depends_on:
+#      - mysqldb
+#    networks:
+#      - common_network
+#
+#networks:
+#  common_network:
+#    driver: bridge
