@@ -54,4 +54,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not have associated restaurants.");
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<String> handleUnauthorizedException(UnauthorizedException e) {
+        return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not have access to this operation");
+    }
 }

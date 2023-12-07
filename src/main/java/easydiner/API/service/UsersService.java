@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import easydiner.API.Enum.Role;
@@ -199,6 +200,10 @@ public class UsersService {
         if (userId != authenticatedUserId) {
             throw new AccessDeniedException("User does not have access to this operation");
         }
+    }
+    private boolean hasAdminRole(Collection<?> roles) {
+        return roles.stream()
+                .anyMatch(role -> "ROLE_ADMIN".equals(role.toString()));
     }
     /**
      * Checks whether a user exists based on the provided user ID.

@@ -32,6 +32,8 @@ public interface OrdersRepository extends JpaRepository<OrdersEntity, Integer> {
 
     // Custom query for getting a list of orders
     List<OrdersEntity> findAll();
+    @Query("SELECT COUNT(u) > 0 FROM OrdersEntity u WHERE u.orderId = :id")
+    boolean checkForExists(@Param("id") int id);
     void deleteByOrderId(int menuId);
     // Custom query for getting order details
 //    @Query("SELECT new easydiner.api.orders.response.GetOrderDTO(o.status, r.name AS restaurantName) FROM OrdersEntity o JOIN RestaurantsEntity r ON o.restaurant_id = r.restaurant_id")

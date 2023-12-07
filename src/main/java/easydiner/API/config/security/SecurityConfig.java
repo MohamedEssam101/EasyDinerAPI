@@ -52,8 +52,8 @@ public class SecurityConfig {
                     .requestMatchers("/menus").permitAll()
                     .anyRequest().authenticated();
         });
-//        http.formLogin(withDefaults())
-//                .oauth2Login(withDefaults());
+        http.formLogin(withDefaults())
+                .oauth2Login(withDefaults());
 
                 http.cors(AbstractHttpConfigurer::disable)
                 .exceptionHandling((exceptionHandling) ->

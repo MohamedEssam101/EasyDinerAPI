@@ -78,7 +78,7 @@ public class OrdersMapperImpl implements OrdersMapper{
 
         return new GetOrdersResponse(orderResponseList);
     }
-    
+
     private int getAuthenticatedUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return ((CustomUserDetails) authentication.getPrincipal()).getUserId();

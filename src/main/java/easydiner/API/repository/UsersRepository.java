@@ -37,6 +37,7 @@ public interface UsersRepository extends JpaRepository<UsersEntity, Integer> {
     // Custom query for checking if a user exists
     boolean existsById(int userId);
 
+    boolean existsByEmail(String email);
     // Custom query for counting users by username
     long countByUsername(String username);
 

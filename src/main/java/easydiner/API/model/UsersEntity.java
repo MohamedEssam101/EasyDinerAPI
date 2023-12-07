@@ -34,6 +34,10 @@ public class UsersEntity {
     @Enumerated(EnumType.STRING) // Assuming Role is an Enum
     private Role role;
 
+    public UsersEntity(String username,String email) {
+        this.username = username;
+        this.email = email;
+    }
     public UsersEntity(String username, String password, String email, Role role) {
         this.username = username;
         this.password = password;

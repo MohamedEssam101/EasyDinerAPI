@@ -4,6 +4,7 @@ import easydiner.API.service.OrdersService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.apache.catalina.connector.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import easydiner.API.requests.AddOrderRequest;
@@ -72,5 +73,12 @@ public class OrdersController {
         log.info("Get Orders API");
         GetOrdersResponse ordersResponses = ordersService.getOrdersResponse();
         return ResponseEntity.ok().body(ordersResponses);
+    }
+
+    @DeleteMapping("/orders/{orderId}")
+    public ResponseEntity<String> deleteOrderResponse(@PathVariable("orderId") int id){
+        log.info("deleting order with id {}",id);
+        ordersService.deleteOrder(id);
+        return ResponseEntity.ok().body("Order Deleted Successfully");
     }
 }
