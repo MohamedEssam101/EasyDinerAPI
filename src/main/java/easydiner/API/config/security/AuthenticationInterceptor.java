@@ -1,5 +1,6 @@
 package easydiner.API.config.security;
 
+import easydiner.API.Enum.Role;
 import easydiner.API.model.UsersEntity;
 import easydiner.API.repository.UsersRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,7 +34,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                 log.info("User exists in the database: {}", usersEntity);
             } else {
                 String randomUsername = generateRandomUsername();
-                UsersEntity usersEntity = new UsersEntity(randomUsername, userEmail);
+                UsersEntity usersEntity = new UsersEntity(randomUsername, userEmail, Role.USER);
                 log.info("User doesn't exist. Created a new user: {}", usersEntity);
 
                 // Save the new user to the database
@@ -101,7 +102,6 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     private UsersEntity getUserFromDatabase(String userEmail) {
         log.info("Retrieving user from the database for email: {}", userEmail);
         UsersEntity userEntity = usersRepository.findByEmail(userEmail);
-        log.info("Retrieved user from the database: {}", userEntity);
         return userEntity;
     }
 

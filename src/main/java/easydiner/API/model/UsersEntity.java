@@ -18,7 +18,8 @@ public class UsersEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int user_id;
+    @Column(name="user_id")
+    private int userId;
 
     @Column(name = "username")
     private String username;
@@ -37,6 +38,11 @@ public class UsersEntity {
     public UsersEntity(String username,String email) {
         this.username = username;
         this.email = email;
+    }
+    public UsersEntity(String username,String email,Role role) {
+        this.username = username;
+        this.email = email;
+        this.role=role;
     }
     public UsersEntity(String username, String password, String email, Role role) {
         this.username = username;

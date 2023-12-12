@@ -16,13 +16,13 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Random;
-import easydiner.API.Enum.Role;
+
 /**
  * The type Users service.
  */
@@ -136,7 +136,7 @@ public class UsersService {
                 }
 
                 // Check if the authenticated user is trying to access their own information
-                if (entity.getUser_id() != authenticatedUserId) {
+                if (entity.getUserId() != authenticatedUserId) {
                     throw new NotFoundException("You do not have access to retrieve this user's information");
                 }
 
@@ -162,13 +162,12 @@ public class UsersService {
      * @return the users responses
      */
 
-    //@PreAuthorize("hasRole('ADMIN')")
     public GetUsersResponses getUsersResponses(Authentication authentication) {
+        log.info("inside GetUsersResponses the authenication email = {}",authentication.getPrincipal());
         // Retrieve the list of user entities from the repository
         log.info("google email = {}", getAuthIdentifier(authentication));
 
         List<UsersEntity> usersEntityList = usersRepository.findAll();
-
         // Map the retrieved user entities to a GetUsersResponses object
         GetUsersResponses usersResponses = usersMapper.mapToGetUsersResponses(usersEntityList);
 
@@ -205,12 +204,6 @@ public class UsersService {
         return roles.stream()
                 .anyMatch(role -> "ROLE_ADMIN".equals(role.toString()));
     }
-    /**
-     * Checks whether a user exists based on the provided user ID.
-     *
-     * @param id The ID of the user to check for existence.
-     * @return true if the user with the given ID exists, otherwise false.
-     */
     private boolean userExists(int id) {
         return usersRepository.checkForExists(id);
     }
@@ -222,18 +215,25 @@ public class UsersService {
      */
     private int getAuthenticatedUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof CustomUserDetails) {
-            return ((CustomUserDetails) principal).getUserId();
-        } else if (principal instanceof OidcUser) {
-            // Handle OIDC user
-            throw new IllegalStateException("Unexpected principal type: OIDC user");
-        } else {
-            // Handle other cases
-            throw new IllegalStateException("Unexpected principal type: " + principal.getClass());
-        }
-    }
+        if (authentication.isAuthenticated()) {
+            Object principal = authentication.getPrincipal();
 
+            if (principal instanceof CustomUserDetails) {
+                return ((CustomUserDetails) principal).getUserId();
+            } else if (principal instanceof DefaultOidcUser) {
+                DefaultOidcUser oidcUser = (DefaultOidcUser) principal;
+                String email = oidcUser.getAttribute("email");
+                log.info("inside getAuth email = {}",email);
+
+                // Use the UserService method to get the userId
+                UsersEntity usersEntity = usersRepository.findByEmail(email);
+                return usersEntity.getUserId();
+            }
+            // Handle other principal types if needed
+        }
+        // Handle unauthenticated users
+        throw new IllegalStateException("User not authenticated");
+    }
 
 
 
@@ -274,36 +274,4 @@ public class UsersService {
         }
     }
 
-
-
-    public UsersEntity createUserFromGoogleAuth(String googleUserEmail){
-        UsersEntity existingUser = usersRepository.getUserByName(googleUserEmail);
-        if (existingUser != null) {
-            // User already exists, return the existing user
-            return existingUser;
-        } else {
-            UsersEntity newUser = new UsersEntity();
-            newUser.setUsername(generateRandomUsername());
-            newUser.setEmail(googleUserEmail);
-            newUser.setRole(Role.USER);
-            usersRepository.insertUser(newUser);
-            return newUser;
-        }
-    }
-    private String generateRandomUsername() {
-        String baseUsername = "user" + System.currentTimeMillis();
-        int randomSuffix = new Random().nextInt(1000);
-
-        // Generate a candidate username
-        String candidateUsername = baseUsername + "_" + randomSuffix;
-        while (usersRepository.countByUsername(candidateUsername) > 0) {
-            // If it exists, generate a new randomSuffix and try again
-            randomSuffix = new Random().nextInt(1000);
-            candidateUsername = baseUsername + "_" + randomSuffix;
-        }
-
-        return candidateUsername;
-    }
-
-    // Other methods in your service
 }

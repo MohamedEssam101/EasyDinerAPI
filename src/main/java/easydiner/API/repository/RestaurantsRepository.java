@@ -2,6 +2,7 @@ package easydiner.API.repository;
 
 import easydiner.API.model.OrdersEntity;
 import easydiner.API.model.RestaurantsEntity;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -30,6 +31,7 @@ public interface RestaurantsRepository extends JpaRepository<RestaurantsEntity, 
     List<RestaurantsEntity> findAll();
 
     // Custom query for deleting a restaurant by ID
+    @Transactional
     void deleteByRestaurantId(int menuId);
 
     // Custom query for checking if a restaurant exists by ID

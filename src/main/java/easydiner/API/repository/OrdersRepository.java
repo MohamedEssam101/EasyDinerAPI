@@ -2,6 +2,7 @@ package easydiner.API.repository;
 
 import easydiner.API.Enum.Status;
 import easydiner.API.model.OrdersEntity;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -34,7 +35,8 @@ public interface OrdersRepository extends JpaRepository<OrdersEntity, Integer> {
     List<OrdersEntity> findAll();
     @Query("SELECT COUNT(u) > 0 FROM OrdersEntity u WHERE u.orderId = :id")
     boolean checkForExists(@Param("id") int id);
-    void deleteByOrderId(int menuId);
+    @Transactional
+    void deleteByOrderId(int orderId);
     // Custom query for getting order details
 //    @Query("SELECT new easydiner.api.orders.response.GetOrderDTO(o.status, r.name AS restaurantName) FROM OrdersEntity o JOIN RestaurantsEntity r ON o.restaurant_id = r.restaurant_id")
 //    List<GetOrderDTO> getOrderDetails();
